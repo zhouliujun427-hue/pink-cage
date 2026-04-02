@@ -2,36 +2,43 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>粉色牢笼 - 猫娘们的秘密 v1.0</title>
+<title>粉色牢笼 - 猫娘们的秘密 v3.2</title>
 <style>
     body { font-family: "Microsoft YaHei", system-ui; background: linear-gradient(#1a0033, #330066); color: #ffccff; margin: 0; padding: 15px; line-height: 1.7; }
-    #game { max-width: 850px; margin: 20px auto; background: #2a0044; padding: 25px; border-radius: 18px; box-shadow: 0 0 30px #ff66cc; }
+    #game { max-width: 920px; margin: 20px auto; background: #2a0044; padding: 25px; border-radius: 18px; box-shadow: 0 0 30px #ff66cc; }
     h1 { text-align: center; color: #ff99ff; margin-bottom: 20px; }
-    .status { background: #440077; padding: 12px; border-radius: 12px; margin: 15px 0; font-size: 15px; }
-    .log { max-height: 55vh; overflow-y: auto; background: #1a0033; padding: 18px; border-radius: 12px; margin: 15px 0; }
-    .choice { display: block; margin: 14px 0; padding: 16px; background: #550088; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
-    .choice:hover { background: #7700aa; transform: translateX(8px); }
+    .status { background: #440077; padding: 15px; border-radius: 12px; margin: 15px 0; font-size: 15px; line-height: 1.5; }
+    .log { max-height: 60vh; overflow-y: auto; background: #1a0033; padding: 20px; border-radius: 12px; margin: 15px 0; }
+    .choice { display: block; margin: 14px 0; padding: 18px; background: #550088; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
+    .choice:hover { background: #7700aa; transform: translateX(10px); }
     .highlight { color: #ff99ff; font-weight: bold; }
 </style>
 </head>
 <body>
 <div id="game">
-    <h1>粉色牢笼 - 猫娘们的秘密</h1>
+    <h1>粉色牢笼 - 猫娘们的秘密 v3.2</h1>
     <div class="status" id="status">羞耻值: 30　兴奋值: 25　顺从度: 20　在场: 小骚猫</div>
     <div class="log" id="log"></div>
     <div id="choices"></div>
 </div>
 
 <script>
-// 游戏状态
+// ==================== 游戏核心状态 ====================
 let shame = 30;
 let arousal = 25;
 let obedience = 20;
 let activeGirls = ["小骚猫"];
 
+let yuriTrigger = false;
+let yuriActive = [];
+let yuriResist = [];
+
 function updateStatus() {
-    document.getElementById("status").innerHTML = 
-        `羞耻值: ${shame}　兴奋值: ${arousal}　顺从度: ${obedience}　在场: ${activeGirls.join("、")}`;
+    let statusText = `羞耻值: ${shame}　兴奋值: ${arousal}　顺从度: ${obedience}　在场: ${activeGirls.join("、")}`;
+    if (yuriTrigger) {
+        statusText += `<br>女同触发：主动: ${yuriActive.join("、")} | 抵抗: ${yuriResist.join("、")}`;
+    }
+    document.getElementById("status").innerHTML = statusText;
 }
 
 function addLog(text) {
@@ -58,59 +65,125 @@ function showChoices(options) {
 // ====================== 开场场景 ======================
 function startGame() {
     document.getElementById("log").innerHTML = "";
-    addLog("深夜，大学图书馆最偏僻的古籍阅览室……");
-    addLog("空气中弥漫着旧书和淡淡的少女体香。你轻轻推开书架后方的隐秘空间，一下子愣住了。");
+    addLog("深夜，大学图书馆最偏僻的古籍阅览室，灯光昏黄，只有几盏应急灯投下微弱的光晕。");
+    addLog("空气中混杂着旧书的霉香和越来越浓的少女甜腻体香。你轻轻推开书架后方的隐秘空间，一下子愣住了。");
 
-    addLog("<br><strong>K8</strong> 正蜷缩在角落的地板上。她用粉色丝带把自己绑成羞耻的M字开腿姿势，超短裙完全掀到腰间，粉色过膝袜已经被淫水浸得透亮。跳蛋低频震动着，她发出软软的“呼噜呜呜～”猫叫，猫耳害羞地耷拉下来，眼睛水汪汪的，脸红得像要滴出血来。");
+    addLog("<br><strong>K8</strong> 正蜷缩在角落的地板上。她用粉色丝带把自己绑成羞耻的M字开腿姿势，超短粉色裙完全掀到腰间，粉色过膝袜已经被淫水浸得透亮。跳蛋低频震动着，阴蒂吸吮器紧紧贴着最敏感的地方。她发出软软的“呼噜呜呜～”猫叫，粉白猫耳害羞地耷拉下来，粉紫色眼睛水汪汪的，脸红得像要滴出血来，小巧柔软的胸部随着急促呼吸轻轻起伏。");
+
+    addLog("她的毛茸茸猫尾巴软软地卷着自己的大腿，尾尖因为快感而微微抽搐。淫水顺着粉色过膝袜内侧缓缓流下，在地板上留下晶莹的水迹。");
 
     updateStatus();
     showChoices([
         { text: "1. 默默靠近，蹲下来仔细观察她", action: scene1_1 },
-        { text: "2. 大步走过去，直接掀开她的裙子", action: scene1_2 },
-        { text: "3. 温柔地摸摸她的猫耳，轻声问她怎么了", action: scene1_3 },
-        { text: "4. 拿出手机开始录像威胁她", action: scene1_4 }
+        { text: "2. 大步走过去，直接粗暴地掀开她的裙子", action: scene1_2 },
+        { text: "3. 温柔地蹲下来，轻轻摸摸她的猫耳", action: scene1_3 },
+        { text: "4. 拿出手机开始录像威胁她", action: scene1_4 },
+        { text: "5. 先不惊动她，躲在暗处继续观察", action: scene1_5 },
+        { text: "6. 故意发出声音，让她发现你", action: scene1_6 }
     ]);
 }
 
-// 选项1：观察
+// 详细选项1：观察
 function scene1_1() {
-    addLog("你悄无声息地靠近。K8没有发现你。她正轻轻摇动细腰，尾巴软软地卷着自己的大腿，粉紫色眼睛半闭着，表情又羞耻又迷离。淫水顺着粉色过膝袜内侧缓缓流下，在地板上留下晶莹的水迹。");
-    shame += 10; arousal += 15;
+    addLog("你悄无声息地靠近。K8没有发现你。她正轻轻摇动细腰，尾巴软软地卷着自己的大腿，粉紫色眼睛半闭着，表情又羞耻又迷离。淫水顺着粉色过膝袜内侧缓缓流下，在地板上留下晶莹的水迹。她的呼吸越来越急促，小声地发出压抑的“呼噜呜呜～”猫叫，猫耳敏感地抖动着。");
+    shame += 12; arousal += 18;
     updateStatus();
-    addLog("<br>突然，书架后面传来轻微的脚步声……<strong>小骚猫</strong>也偷偷溜了进来，看到K8的样子后，她的粉紫色眼睛瞬间变成心形。");
+    addLog("<br>突然，书架后面传来轻微脚步声……<strong>小骚猫</strong>也偷偷溜了进来，看到K8的样子后，她的粉紫色眼睛瞬间变成心形，脸颊迅速泛起粉红。");
     activeGirls.push("小骚猫");
     updateStatus();
     showChoices([
-        { text: "同时走向她们两个", action: () => addLog("你决定同时接近小骚猫和K8……") },
-        { text: "先专注K8，暂时无视小骚猫", action: () => addLog("你先蹲到K8面前……") }
+        { text: "1. 同时走向K8和小骚猫", action: scene1_1a },
+        { text: "2. 先专注K8，暂时无视小骚猫", action: scene1_1b },
+        { text: "3. 让小骚猫帮忙一起玩弄K8", action: scene1_1c }
+    ]);
+}
+
+function scene1_1a() {
+    addLog("你同时走向她们两个。小骚猫兴奋地贴过来，黏人地蹭着你的手臂，粉紫眼睛里满是心形。而K8则惊慌地想把腿合拢，却因为自缚完全做不到，发出软软的哭声。");
+    shame += 18; arousal += 25;
+    updateStatus();
+    showChoices([
+        { text: "伸手同时摸她们", action: () => addLog("你伸手同时摸向K8的猫耳和小骚猫的尾巴……") },
+        { text: "先亲吻小骚猫", action: () => addLog("你先低头吻住小骚猫，她立刻热情地回应……") }
+    ]);
+}
+
+function scene1_1b() {
+    addLog("你先蹲到K8面前，仔细看着她颤抖的身体。K8的猫耳抖个不停，眼睛里满是羞耻的泪水，嘴巴微微张开，发出压抑的喘息。");
+    shame += 14; arousal += 22;
+    updateStatus();
+    showChoices([
+        { text: "伸手摸她的猫耳", action: () => addLog("你轻轻摸了摸K8的猫耳，她发出软软的呼噜声，却更害羞了……") },
+        { text: "突然用力捏她的尾巴", action: () => addLog("你突然用力捏住她的猫尾巴……K8惊叫一声，眼泪掉下来。") }
+    ]);
+}
+
+function scene1_1c() {
+    addLog("你小声对小骚猫说：去，帮我一起玩她。小骚猫眼睛亮了起来，黏人地扑向K8，开始温柔却大胆地舔她的猫耳。K8发出软软的哭声：“呼噜呜呜～小骚猫……不要……”");
+    shame += 20; arousal += 28;
+    updateStatus();
+    showChoices([
+        { text: "加入她们", action: () => addLog("你也加入进去，同时玩弄两个猫娘……") }
     ]);
 }
 
 // 选项2：粗暴掀裙
 function scene1_2() {
-    addLog("你大步走过去，一把粗暴地掀开K8的超短裙。K8惊恐地抬起头，猫耳猛地竖起，发出软软的惊叫：“呼噜呜呜～不要……！”她的粉嫩骚穴完全暴露在你眼前，跳蛋还在里面震动，淫水“咕啾”一声又流出一股。");
-    shame += 25; arousal += 20;
+    addLog("你大步走过去，一把粗暴地掀开K8的超短裙。K8惊恐地抬起头，猫耳猛地竖起，发出软软的惊叫：“呼噜呜呜～不要……！”她的粉嫩骚穴完全暴露在你眼前，跳蛋还在里面震动，淫水“咕啾”一声又流出一股，顺着粉色过膝袜流下。");
+    shame += 28; arousal += 25;
     updateStatus();
-    showChoices([{ text: "继续粗暴玩法", action: () => addLog("你伸手直接按住她的跳蛋……") }]);
+    showChoices([
+        { text: "直接伸手按住她的跳蛋", action: () => { addLog("你粗暴地按住跳蛋，让震动更强烈……K8的身体猛地弓起，哭喊出声。"); shame += 15; arousal += 30; updateStatus(); } },
+        { text: "用力扇她的屁股", action: () => { addLog("你用力扇了K8的屁股几下……啪！啪！啪！红印迅速出现。"); shame += 22; } },
+        { text: "拉扯她的猫尾巴", action: () => { addLog("你抓住K8的猫尾巴用力一拽……她发出高亢的哭叫。"); } }
+    ]);
 }
 
 // 选项3：温柔摸耳
 function scene1_3() {
-    addLog("你轻轻伸出手，摸了摸K8软软的猫耳。她身体一颤，发出甜甜的“呼噜～”声，脸红得更厉害了，却没有躲开。");
-    shame += 5; arousal += 18;
+    addLog("你轻轻伸出手，摸了摸K8软软的猫耳。她身体一颤，发出甜甜的“呼噜～”声，脸红得更厉害了，却没有躲开，反而微微把头靠过来。她的猫尾巴轻轻卷住你的手腕。");
+    shame += 6; arousal += 20;
     updateStatus();
-    showChoices([{ text: "继续温柔互动", action: () => addLog("K8软软地蹭了蹭你的手……") }]);
+    showChoices([
+        { text: "继续温柔抚摸她", action: () => { addLog("K8软软地蹭了蹭你的手，发出满足的呼噜声……"); } },
+        { text: "突然用力捏她的猫耳", action: () => { addLog("你突然用力捏住她的猫耳……K8惊叫一声，眼泪掉下来。"); shame += 15; } }
+    ]);
 }
 
 // 选项4：录像
 function scene1_4() {
-    addLog("你拿出手机对准她开始录像。K8发现后眼泪一下子掉下来，哭着求你：“呼噜呜呜～不要拍……K8好羞耻……大家会看到的……”");
-    shame += 30; arousal += 12;
+    addLog("你拿出手机对准她开始录像。K8发现后眼泪一下子掉下来，哭着求你：“呼噜呜呜～不要拍……K8好羞耻……大家会看到的……”她的身体因为羞耻而轻轻颤抖，淫水流得更多了。");
+    shame += 32; arousal += 15;
     updateStatus();
-    showChoices([{ text: "继续录像并威胁", action: () => addLog("你把镜头凑得更近……") }]);
+    showChoices([
+        { text: "继续录像并低声威胁", action: () => { addLog("你把镜头凑得更近，低声说：不听话的话我就发出去……"); } },
+        { text: "把视频发给小骚猫看", action: () => { addLog("你把视频发给了小骚猫……小骚猫的眼睛亮了起来。"); } }
+    ]);
 }
 
-// 启动游戏
+// 选项5：假装路过
+function scene1_5() {
+    addLog("你假装只是路过，先不惊动她。K8继续沉浸在自己的世界里，轻轻摇动身体，发出压抑的猫叫，尾巴软软地甩动着。");
+    shame += 4; arousal += 10;
+    updateStatus();
+    showChoices([
+        { text: "突然从后面抱住她", action: () => { addLog("你从后面突然抱住K8……她吓得全身一颤。"); } },
+        { text: "继续假装路过，离开这里", action: () => { addLog("你暂时离开了……但心里已经深深记住了这一幕。"); } }
+    ]);
+}
+
+// 选项6：故意发出声音
+function scene1_6() {
+    addLog("你故意发出一点声音。K8猛地抬起头，猫耳竖起，眼睛里满是惊慌：“呼噜呜呜～……谁……谁在那里？”");
+    shame += 18; arousal += 12;
+    updateStatus();
+    showChoices([
+        { text: "走出去让她看到你", action: () => { addLog("你走出去……K8的眼睛瞬间瞪大。"); } },
+        { text: "继续躲着观察", action: () => { addLog("你继续躲在暗处……"); } }
+    ]);
+}
+
+// ====================== 启动游戏 ======================
 startGame();
 </script>
 </body>
