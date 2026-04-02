@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>粉色牢笼 - 猫娘们的秘密 v1.0</title>
+<style>
+    body { font-family: "Microsoft YaHei", system-ui; background: linear-gradient(#1a0033, #330066); color: #ffccff; margin: 0; padding: 15px; line-height: 1.7; }
+    #game { max-width: 850px; margin: 20px auto; background: #2a0044; padding: 25px; border-radius: 18px; box-shadow: 0 0 30px #ff66cc; }
+    h1 { text-align: center; color: #ff99ff; margin-bottom: 20px; }
+    .status { background: #440077; padding: 12px; border-radius: 12px; margin: 15px 0; font-size: 15px; }
+    .log { max-height: 55vh; overflow-y: auto; background: #1a0033; padding: 18px; border-radius: 12px; margin: 15px 0; }
+    .choice { display: block; margin: 14px 0; padding: 16px; background: #550088; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
+    .choice:hover { background: #7700aa; transform: translateX(8px); }
+    .highlight { color: #ff99ff; font-weight: bold; }
+</style>
+</head>
+<body>
+<div id="game">
+    <h1>粉色牢笼 - 猫娘们的秘密</h1>
+    <div class="status" id="status">羞耻值: 30　兴奋值: 25　顺从度: 20　在场: 小骚猫</div>
+    <div class="log" id="log"></div>
+    <div id="choices"></div>
+</div>
+
+<script>
+// 游戏状态
+let shame = 30;
+let arousal = 25;
+let obedience = 20;
+let activeGirls = ["小骚猫"];
+
+function updateStatus() {
+    document.getElementById("status").innerHTML = 
+        `羞耻值: ${shame}　兴奋值: ${arousal}　顺从度: ${obedience}　在场: ${activeGirls.join("、")}`;
+}
+
+function addLog(text) {
+    const log = document.getElementById("log");
+    log.innerHTML += `<p>${text}</p>`;
+    log.scrollTop = log.scrollHeight;
+}
+
+function showChoices(options) {
+    const choicesDiv = document.getElementById("choices");
+    choicesDiv.innerHTML = "";
+    options.forEach((opt, index) => {
+        const btn = document.createElement("div");
+        btn.className = "choice";
+        btn.textContent = `${index + 1}. ${opt.text}`;
+        btn.onclick = () => {
+            addLog(`<span class="highlight">→ 你选择了: ${opt.text}</span>`);
+            opt.action();
+        };
+        choicesDiv.appendChild(btn);
+    });
+}
+
+// ====================== 开场场景 ======================
+function startGame() {
+    document.getElementById("log").innerHTML = "";
+    addLog("深夜，大学图书馆最偏僻的古籍阅览室……");
+    addLog("空气中弥漫着旧书和淡淡的少女体香。你轻轻推开书架后方的隐秘空间，一下子愣住了。");
+
+    addLog("<br><strong>K8</strong> 正蜷缩在角落的地板上。她用粉色丝带把自己绑成羞耻的M字开腿姿势，超短裙完全掀到腰间，粉色过膝袜已经被淫水浸得透亮。跳蛋低频震动着，她发出软软的“呼噜呜呜～”猫叫，猫耳害羞地耷拉下来，眼睛水汪汪的，脸红得像要滴出血来。");
+
+    updateStatus();
+    showChoices([
+        { text: "1. 默默靠近，蹲下来仔细观察她", action: scene1_1 },
+        { text: "2. 大步走过去，直接掀开她的裙子", action: scene1_2 },
+        { text: "3. 温柔地摸摸她的猫耳，轻声问她怎么了", action: scene1_3 },
+        { text: "4. 拿出手机开始录像威胁她", action: scene1_4 }
+    ]);
+}
+
+// 选项1：观察
+function scene1_1() {
+    addLog("你悄无声息地靠近。K8没有发现你。她正轻轻摇动细腰，尾巴软软地卷着自己的大腿，粉紫色眼睛半闭着，表情又羞耻又迷离。淫水顺着粉色过膝袜内侧缓缓流下，在地板上留下晶莹的水迹。");
+    shame += 10; arousal += 15;
+    updateStatus();
+    addLog("<br>突然，书架后面传来轻微的脚步声……<strong>小骚猫</strong>也偷偷溜了进来，看到K8的样子后，她的粉紫色眼睛瞬间变成心形。");
+    activeGirls.push("小骚猫");
+    updateStatus();
+    showChoices([
+        { text: "同时走向她们两个", action: () => addLog("你决定同时接近小骚猫和K8……") },
+        { text: "先专注K8，暂时无视小骚猫", action: () => addLog("你先蹲到K8面前……") }
+    ]);
+}
+
+// 选项2：粗暴掀裙
+function scene1_2() {
+    addLog("你大步走过去，一把粗暴地掀开K8的超短裙。K8惊恐地抬起头，猫耳猛地竖起，发出软软的惊叫：“呼噜呜呜～不要……！”她的粉嫩骚穴完全暴露在你眼前，跳蛋还在里面震动，淫水“咕啾”一声又流出一股。");
+    shame += 25; arousal += 20;
+    updateStatus();
+    showChoices([{ text: "继续粗暴玩法", action: () => addLog("你伸手直接按住她的跳蛋……") }]);
+}
+
+// 选项3：温柔摸耳
+function scene1_3() {
+    addLog("你轻轻伸出手，摸了摸K8软软的猫耳。她身体一颤，发出甜甜的“呼噜～”声，脸红得更厉害了，却没有躲开。");
+    shame += 5; arousal += 18;
+    updateStatus();
+    showChoices([{ text: "继续温柔互动", action: () => addLog("K8软软地蹭了蹭你的手……") }]);
+}
+
+// 选项4：录像
+function scene1_4() {
+    addLog("你拿出手机对准她开始录像。K8发现后眼泪一下子掉下来，哭着求你：“呼噜呜呜～不要拍……K8好羞耻……大家会看到的……”");
+    shame += 30; arousal += 12;
+    updateStatus();
+    showChoices([{ text: "继续录像并威胁", action: () => addLog("你把镜头凑得更近……") }]);
+}
+
+// 启动游戏
+startGame();
+</script>
+</body>
+</html>
